@@ -1,1 +1,0 @@
-# IKondor.github.io
