@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no, viewport-fit=cover"
+    />
+    <title>Календарик для братишки</title>
+    <style>
+      html,
+      body {
+        height: 100vh;
+        width: 100vw;
+        padding: 0;
+        margin: 0;
+        overflow: hidden;
+      }
+
+      .calendar {
+        --body-padding: 8px;
+        --mounth-padding: 16px;
+        --mounth-item-padding: 8px;
+
+        --year-color: #676767;
+        --mounth-color: #daa057;
+        --weekend-color: #9aadb8;
+
+        --year-font-size: 40pt;
+        --mounth-font-size: 28pt;
+        --week-font-size: 14pt;
+        --day-font-size: 20pt;
+
+        font-family: monospace;
+
+        height: calc(100vh - 2 * var(--body-padding));
+        width: calc(100vw - 2 * var(--body-padding));
+        padding: var(--body-padding);
+
+        display: flex;
+        flex-flow: column nowrap;
+        align-items: center;
+      }
+      .calendar__mounth-list {
+        height: 100%;
+        width: 100%;
+        gap: var(--mounth-padding);
+        display: grid;
+        grid-template-areas:
+          '. . . .'
+          '. . . .'
+          '. . . .';
+      }
+
+      .calendar-title {
+        color: var(--year-color);
+        font-size: var(--year-font-size);
+      }
+
+      .calendar__mounth {
+        display: flex;
+        flex-flow: column nowrap;
+        align-items: center;
+        gap: var(--mounth-item-padding);
+      }
+
+      .calendar__mounth-title {
+        color: var(--mounth-color);
+        font-size: var(--mounth-font-size);
+      }
+
+      .calendar__weeks {
+        width: 100%;
+        display: grid;
+        grid-template-areas: '. . . . . . .';
+        align-items: center;
+        justify-items: center;
+
+        font-size: var(--week-font-size);
+      }
+
+      .calendar__days {
+        height: 100%;
+        width: 100%;
+        display: grid;
+        grid-template-areas:
+          'w0d0 w0d1 w0d2 w0d3 w0d4 w0d5 w0d6'
+          'w1d0 w1d1 w1d2 w1d3 w1d4 w1d5 w1d6'
+          'w2d0 w2d1 w2d2 w2d3 w2d4 w2d5 w2d6'
+          'w3d0 w3d1 w3d2 w3d3 w3d4 w3d5 w3d6'
+          'w4d0 w4d1 w4d2 w4d3 w4d4 w4d5 w4d6'
+          'w5d0 w5d1 w5d2 w5d3 w5d4 w5d5 w5d6';
+        align-items: center;
+        justify-items: center;
+
+        font-size: var(--day-font-size);
+      }
+
+      .weekend {
+        color: var(--weekend-color);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="calendar">
+      <div class="calendar-title"></div>
+
+      <div class="calendar__mounth-list">
+        <div class="calendar__mounth">
+          <div class="calendar__mounth-title"></div>
+          <div class="calendar__weeks"></div>
+          <div class="calendar__days"></div>
+        </div>
+      </div>
+    </div>
+  </body>
+
+  <script>
+    const formatYear = (n) => n.toString(16).toUpperCase();
+    const formatDay = (n) => n.toString(16).toLowerCase();
+    const formatWeek = (n) => n.toString(2).toLowerCase();
+
+    const getDay = (date) => (date.getDay() ? date.getDay() : 7) - 1;
+
+    const year = formatYear(new Date().getFullYear());
+    document.querySelector('.calendar-title').innerText = `0x${year}`;
+
+    const calendarMounthNode = document.querySelector('.calendar__mounth-list');
+    const templateNode = calendarMounthNode.querySelector('.calendar__mounth');
+    const docsFragnemt = document.createDocumentFragment();
+
+    const weeks = [1, 2, 3, 4, 5, 6, 7].map((w) => `<div class="calendar__week ${w > 5 ? 'weekend' : ''}">${formatWeek(w)}</div>`).join('');
+
+    const dateBuffer = new Date();
+
+    for (let i = 0; i < 12; i++) {
+      const node = templateNode.cloneNode(true);
+
+      dateBuffer.setMonth(i);
+      dateBuffer.setDate(1);
+
+      const firstDay = getDay(dateBuffer);
+
+      const result = {
+        title: `0${formatDay(i + 1)}`,
+        days: [],
+      };
+
+      while (dateBuffer.getMonth() === i) {
+        const date = dateBuffer.getDate();
+        const day = getDay(dateBuffer);
+
+        result.days.push({
+          title: formatDay(date),
+          area: `w${Math.ceil((date + firstDay) / 7) - 1}d${day}`,
+          isWeekend: day >= 5,
+        });
+        dateBuffer.setDate(date + 1);
+      }
+
+      node.querySelector('.calendar__mounth-title').innerText = result.title;
+      node.querySelector('.calendar__weeks').innerHTML = weeks;
+      node.querySelector('.calendar__days').innerHTML = result.days
+        .map((d) => `<div class="calendar__day ${d.isWeekend ? 'weekend' : ''}" style="grid-area: ${d.area}">${d.title}</div>`)
+        .join('');
+
+      docsFragnemt.appendChild(node);
+    }
+    calendarMounthNode.innerHTML = '';
+    calendarMounthNode.appendChild(docsFragnemt);
+  </script>
+</html>
