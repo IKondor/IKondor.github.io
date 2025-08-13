@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no, viewport-fit=cover" />
+    <title>Конвертер изображений в base64</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65"
+      crossorigin="anonymous"
+    />
+  </head>
+
+  <body>
+    <div class="d-flex flex-column align-items-center w-100 p-4 gap-4">
+      <h3>Это считалка времени в часах</h3>
+      <h6>Выберите время до и время после, а ниже будет время в часах</h6>
+
+      <div class="d-flex flex-row gap-4">
+        <input id="time_from" class="form-control" type="time" onchange="calcTime()" />
+        <input id="time_to" class="form-control" type="time" onchange="calcTime()" />
+      </div>
+
+      <h3 id="result"></h3>
+    </div>
+  </body>
+
+  <script>
+    function calcTime() {
+      const time_from = document.querySelector('#time_from').value?.split(':');
+      const time_to = document.querySelector('#time_to').value?.split(':');
+
+      if (time_from.length !== 2 || time_to.length !== 2) {
+        return;
+      }
+
+      const date_from = new Date();
+      date_from.setHours(time_from[0]);
+      date_from.setMinutes(time_from[1]);
+      date_from.setSeconds(0);
+      date_from.setMilliseconds(0);
+
+      const date_to = new Date();
+      date_to.setHours(time_to[0]);
+      date_to.setMinutes(time_to[1]);
+      date_to.setSeconds(0);
+      date_to.setMilliseconds(0);
+
+      const result = document.querySelector('#result');
+
+      result.innerHTML = (date_to - date_from) / (1000 * 60 * 60);
+    }
+  </script>
+</html>
